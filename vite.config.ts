@@ -5,7 +5,7 @@ import dts from 'vite-plugin-dts'
 
 const externalPackages = [
   '@endge/nova',
-  '@endge/nova-lib',
+  '@endge/nova-ui-kit',
   '@endge/utils',
   'class-transformer',
   'class-validator',
