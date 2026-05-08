@@ -1,1 +1,1 @@
-export { capitalize } from '../shared/utils/text'
+export { capitalize } from '@/shared/utils/text'

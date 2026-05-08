@@ -1,1 +1,1 @@
-export { compareNumber } from '../shared/utils/compare'
+export { compareNumber } from '@/shared/utils/compare'

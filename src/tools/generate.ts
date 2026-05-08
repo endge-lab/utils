@@ -1,1 +1,1 @@
-export { generateUUID, randomString } from '../shared/utils/generate'
+export { generateUUID, randomString } from '@/shared/utils/generate'
