@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, reactive } from 'vue'
-import type { TooltipInstance } from '@/tooltip/types'
+import type { TooltipInstance } from '@/tooltip/tooltip.types'
 
 export const useTooltipStore = defineStore('tooltip', () => {
   const tooltips = reactive<Record<string, TooltipInstance>>({})

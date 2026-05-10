@@ -1,5 +1,5 @@
-import type { OneOrMany } from '@/tools/types'
-import type { CollectionOptions, IndexCollectionEntity } from '@/collection/types'
+import type { OneOrMany } from '@/tools/tools.types'
+import type { CollectionOptions, IndexCollectionEntity } from '@/collection/collection.types'
 
 /**
  * Высокопроизводительная IndexedCollection

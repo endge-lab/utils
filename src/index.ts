@@ -2,7 +2,7 @@ export { useCookie } from '@/composable/useCookie'
 
 export * from '@/collection/collection'
 export * from '@/collection/indexed-collection'
-export * from '@/collection/types'
+export * from '@/collection/collection.types'
 
 export * from '@/events/EventBus'
 export * from '@/events/Subscribable'
@@ -35,7 +35,7 @@ export * from '@/tools/script'
 export * from '@/tools/state'
 export * from '@/tools/text'
 export * from '@/tools/time'
-export * from '@/tools/types'
+export * from '@/tools/tools.types'
 
 export * from '@/tooltip/store'
-export * from '@/tooltip/types'
+export * from '@/tooltip/tooltip.types'

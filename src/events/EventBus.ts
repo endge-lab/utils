@@ -1,4 +1,4 @@
-import type { OneOrMany } from '@/tools/types'
+import type { OneOrMany } from '@/tools/tools.types'
 
 /**
  * Тип колбэка для события.

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onBeforeUnmount, computed } from 'vue'
 import { useTooltipStore } from '@/tooltip/store'
-import { TooltipAttribute } from '@/tooltip/types'
+import { TooltipAttribute } from '@/tooltip/tooltip.types'
 import { randomString } from '@/tools/generate'
 
 const props = withDefaults(

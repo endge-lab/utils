@@ -1,8 +1,8 @@
 import type {
   CollectionEntity,
   CollectionEvents,
-} from '@/collection/types'
-import { Events } from '@/collection/types'
+} from '@/collection/collection.types'
+import { Events } from '@/collection/collection.types'
 import { EventBus } from '@/events/EventBus'
 import { Subscribable } from '@/events/Subscribable'
 

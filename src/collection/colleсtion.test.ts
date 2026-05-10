@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import type { CollectionEntity } from '@/collection/types'
-import { Events } from '@/collection/types'
+import type { CollectionEntity } from '@/collection/collection.types'
+import { Events } from '@/collection/collection.types'
 import { Collection } from '@/collection/collection'
 
 interface User extends CollectionEntity {
