@@ -1,4 +1,4 @@
-export class DelayedExecutor<T extends any[] = []> {
+export class DelayedExecutor<T extends Array<any> = []> {
   private delayTimer: ReturnType<typeof setTimeout> | null = null
   private maxTimer: ReturnType<typeof setTimeout> | null = null
   private hasExecutedOnce = false

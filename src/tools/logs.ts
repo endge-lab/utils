@@ -29,14 +29,14 @@ export interface StructuredLogEntry {
   message: string
 
   /** Контекст (иерархия вложенности) */
-  context: string[]
+  context: Array<string>
 
   /** Дополнительные действия (например, кнопки для лога) */
-  actions?: {
+  actions?: Array<{
     icon: string
     tooltip?: string
     handler: () => void
-  }[]
+  }>
 }
 
 /**
@@ -69,10 +69,10 @@ export interface StructuredLogEntry {
  */
 export class StructuredLogger extends Subscribable {
   /** Массив всех логов */
-  private logs: StructuredLogEntry[] = []
+  private logs: Array<StructuredLogEntry> = []
 
   /** Текущий контекст (иерархия) */
-  private currentContext: string[] = []
+  private currentContext: Array<string> = []
   private currentActions: StructuredLogEntry['actions'] = []
 
   /**
@@ -84,7 +84,7 @@ export class StructuredLogger extends Subscribable {
    * @example
    * logger.context('components', 'DriverCard')
    */
-  context(...context: string[]): this {
+  context(...context: Array<string>): this {
     this.currentContext = context
     return this
   }
@@ -154,11 +154,11 @@ export class StructuredLogger extends Subscribable {
   private log(
     level: 'debug' | 'info' | 'warn' | 'error' | 'success',
     message: string,
-    actions?: {
+    actions?: Array<{
       icon: string
       tooltip?: string
       handler: () => void
-    }[],
+    }>,
   ): void {
     const logEntry: StructuredLogEntry = {
       timestamp: Date.now(),
@@ -240,7 +240,7 @@ export class StructuredLogger extends Subscribable {
    *
    * @returns Массив логов
    */
-  getLogs(): StructuredLogEntry[] {
+  getLogs(): Array<StructuredLogEntry> {
     return this.logs
   }
 

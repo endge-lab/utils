@@ -50,7 +50,7 @@ export class HotkeyManager {
     }
   }
 
-  on(keys: string | string[], handler: HotkeyHandler): void {
+  on(keys: string | Array<string>, handler: HotkeyHandler): void {
     const keyList = Array.isArray(keys) ? keys : [keys]
     for (const key of keyList) {
       const normalized = key.toLowerCase()
@@ -61,7 +61,7 @@ export class HotkeyManager {
     }
   }
 
-  off(keys: string | string[], handler: HotkeyHandler): void {
+  off(keys: string | Array<string>, handler: HotkeyHandler): void {
     const keyList = Array.isArray(keys) ? keys : [keys]
     for (const key of keyList) {
       const normalized = key.toLowerCase()

@@ -15,8 +15,8 @@ import type { CollectionOptions, IndexCollectionEntity } from '@/collection/coll
  * - При изменении filterFn можно пересобрать filteredList без пересортировки list.
  */
 export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string | null> {
-  private list: T[] = []
-  private filteredList: T[] = []
+  private list: Array<T> = []
+  private filteredList: Array<T> = []
 
   private map: Map<ID, T> = new Map()
   private indexById: Map<ID, number> = new Map()
@@ -100,7 +100,7 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
   }
 
   add(items: OneOrMany<T>): void {
-    const toAdd: T[] = Array.isArray(items) ? items : [items]
+    const toAdd: Array<T> = Array.isArray(items) ? items : [items]
 
     for (const item of toAdd) {
       if (this.map.has(item.id)) continue
@@ -175,14 +175,14 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
   /**
    * Отсортированный и/или отфильтрованный список (в зависимости от включенных функций).
    */
-  all(): T[] {
+  all(): Array<T> {
     return this.filtered()
   }
 
   /**
    * Отсортированный полный список (без фильтра), если есть sortFn.
    */
-  unfiltered(): T[] {
+  unfiltered(): Array<T> {
     this.ensureSorted()
     return this.list
   }
@@ -191,7 +191,7 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
    * Отсортированный и отфильтрованный список (если есть filterFn).
    * Если filterFn нет — возвращается list.
    */
-  filtered(): T[] {
+  filtered(): Array<T> {
     this.ensure()
     return this.filterFn ? this.filteredList : this.list
   }
@@ -232,7 +232,6 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     this.dirtySort = false
     this.dirtyFilter = false
   }
-
 
   private rebuildFilteredFromScratch(): void {
     // Если фильтра нет — filteredList не используется

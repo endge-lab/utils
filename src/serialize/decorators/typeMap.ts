@@ -77,7 +77,7 @@ export function TypeMap<V>(
         }
 
         return new Map(
-          value.map((item) => {
+          value.map(item => {
             const instance: V = plainToInstance(valueType, item)
             return [instance[keyField] as string, instance]
           }),
@@ -105,7 +105,7 @@ export function TypeMap<V>(
         return keyField ? [] : {}
       }
 
-      return Array.from(value.values()).map((item) => instanceToPlain(item))
+      return Array.from(value.values()).map(item => instanceToPlain(item))
     }
 
     console.warn('[TypeMap] Unexpected transformation type:', type)

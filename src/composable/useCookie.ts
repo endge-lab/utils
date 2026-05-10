@@ -5,8 +5,8 @@ import { destr } from 'destr'
 const CookieDefaults = {
   path: '/',
   watch: true,
-  decode: (val) => destr(decodeURIComponent(val)),
-  encode: (val) => encodeURIComponent(typeof val === 'string' ? val : JSON.stringify(val)),
+  decode: val => destr(decodeURIComponent(val)),
+  encode: val => encodeURIComponent(typeof val === 'string' ? val : JSON.stringify(val)),
 }
 
 export const useCookie = (name, _opts?) => {

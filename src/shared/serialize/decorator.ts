@@ -6,7 +6,7 @@ import { IsOptional } from 'class-validator'
 import 'reflect-metadata'
 
 export function GenericExpose(options: ExposeOptions) {
-  return function (target: Object, propertyKey: string | symbol) {
+  return function (target: object, propertyKey: string | symbol) {
     Expose(options)(target, propertyKey) // Используем декоратор @Expose
     Reflect.defineMetadata('genericExpose', options.name, target, propertyKey)
   }
@@ -31,7 +31,7 @@ export function AfterDeserialize(target: any, propertyKey: string, descriptor: P
 
 // Объединяет в себе IsOptional c конвертацией null в undefined для исключения из json
 export function IsOptionalTransformed(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: object, propertyName: string) {
     // Применяем Transform декоратор
     Transform(({ value }) => (value === null ? undefined : value), { toPlainOnly: true })(object, propertyName)
 
@@ -56,7 +56,7 @@ function callBeforeSerialize(instance: any) {
   }
 
   // Recursively call beforeSerialize for nested objects
-  Object.values(instance).forEach((value) => {
+  Object.values(instance).forEach(value => {
     if (value && typeof value === 'object') {
       callBeforeSerialize(value)
     }
@@ -77,7 +77,7 @@ export function DeserializeArrayField(field: string) {
   return Transform(({ value, type }) => {
     // При сериализации
     if (type === TransformationType.PLAIN_TO_CLASS) {
-      return value?.map((x) => x?.[field])
+      return value?.map(x => x?.[field])
     }
     return value
   })
@@ -97,7 +97,7 @@ export function SerializeIds() {
   return Transform(({ value, type }) => {
     // При сериализации
     if (type === TransformationType.CLASS_TO_PLAIN) {
-      return value.map((x) => x.id)
+      return value.map(x => x.id)
     }
     return value
   })

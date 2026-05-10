@@ -11,9 +11,9 @@ export enum Events {
 }
 
 export type CollectionEvents<T extends CollectionEntity> = {
-  [Events.Add]: T[]
-  [Events.Remove]: T[]
-  [Events.Update]: T[]
+  [Events.Add]: Array<T>
+  [Events.Remove]: Array<T>
+  [Events.Update]: Array<T>
   [Events.IndexCreate]: keyof T
 }
 
@@ -32,9 +32,9 @@ export type CollectionOptions<T extends IndexCollectionEntity<ID>, ID = string |
 
 export interface ReadonlyIndexCollection<T extends IndexCollectionEntity<ID>, ID = string | null> {
   get(id: ID): T | undefined
-  all(): readonly T[]
+  all(): ReadonlyArray<T>
   size(): number
-  unfiltered(): readonly T[]
+  unfiltered(): ReadonlyArray<T>
   has(id: ID): boolean
   forEach(callback: (item: T) => void): void
 }

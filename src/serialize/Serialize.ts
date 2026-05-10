@@ -1,6 +1,6 @@
-import { getOnDeserializedMethod } from '@/serialize/decorators/onDeserialized'
 import type { ClassConstructor } from 'class-transformer'
 import { instanceToPlain, plainToInstance } from 'class-transformer'
+import { getOnDeserializedMethod } from '@/serialize/decorators/onDeserialized'
 
 // Инструмент сериализации данных на основании
 // пакета class-transformer

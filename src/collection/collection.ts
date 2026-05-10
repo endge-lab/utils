@@ -7,12 +7,12 @@ import { EventBus } from '@/events/EventBus'
 import { Subscribable } from '@/events/Subscribable'
 
 export class Collection<T extends CollectionEntity> extends Subscribable {
-  private items: T[] = []
+  private items: Array<T> = []
   private indices: Map<keyof T, Map<any, T>> = new Map()
   private rootIds: Set<string> = new Set()
   private bus: EventBus<CollectionEvents<T>>
 
-  constructor(initialItems: T[] = []) {
+  constructor(initialItems: Array<T> = []) {
     super()
     this.bus = new EventBus<CollectionEvents<T>>(Object.values(Events))
     if (initialItems.length) {
@@ -21,9 +21,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     this.createIndex('id')
   }
 
-  add(items: T | T[]): void {
+  add(items: T | Array<T>): void {
     const list = Array.isArray(items) ? items : [items]
-    list.forEach((item) => {
+    list.forEach(item => {
       this.items.push(item)
       this.indices.forEach((indexMap, field) => {
         indexMap.set(item[field], item)
@@ -38,13 +38,13 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     }
   }
 
-  remove(arg: string | T | (string | T)[]): void {
-    const list: (string | T)[] = Array.isArray(arg) ? arg : [arg]
-    const removedItems: T[] = []
+  remove(arg: string | T | Array<string | T>): void {
+    const list: Array<string | T> = Array.isArray(arg) ? arg : [arg]
+    const removedItems: Array<T> = []
 
-    list.forEach((itemOrId) => {
+    list.forEach(itemOrId => {
       const id = typeof itemOrId === 'string' ? itemOrId : itemOrId.id
-      const index = this.items.findIndex((i) => i.id === id)
+      const index = this.items.findIndex(i => i.id === id)
 
       if (index !== -1) {
         const [removed] = this.items.splice(index, 1)
@@ -68,9 +68,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     }
   }
 
-  update(itemOrItems: T | T[]): void {
+  update(itemOrItems: T | Array<T>): void {
     const list = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems]
-    list.forEach((item) => {
+    list.forEach(item => {
       const existing = this.get(item.id)
       if (existing) {
         Object.assign(existing, item)
@@ -100,7 +100,7 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
   private createIndex(field: keyof T): void {
     if (this.indices.has(field)) return
     const indexMap = new Map<any, T>()
-    this.items.forEach((item) => {
+    this.items.forEach(item => {
       indexMap.set(item[field], item)
     })
     this.indices.set(field, indexMap)
@@ -110,15 +110,15 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
   /**
    * Возвращает реактивный массив всех элементов.
    */
-  get all(): T[] {
+  get all(): Array<T> {
     return this.items
   }
 
   /**
    * Возвращает массив корневых элементов (без parentId).
    */
-  get allRoot(): T[] {
-    return Array.from(this.rootIds).map((id) => this.get(id)!)
+  get allRoot(): Array<T> {
+    return Array.from(this.rootIds).map(id => this.get(id)!)
   }
 
   // Доступ к подпискам

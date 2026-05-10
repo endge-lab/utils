@@ -91,8 +91,8 @@ export function extractTime(date: Date | string | object, isLocalTime = true) {
 
 export function findMinMaxDates(dates: Set<Date>): { minDate: Date; maxDate: Date } {
   const dateArray = Array.from(dates)
-  const minTime = Math.min(...dateArray.map((date) => date.getTime()))
-  const maxTime = Math.max(...dateArray.map((date) => date.getTime()))
+  const minTime = Math.min(...dateArray.map(date => date.getTime()))
+  const maxTime = Math.max(...dateArray.map(date => date.getTime()))
   return {
     minDate: new Date(minTime),
     maxDate: new Date(maxTime),

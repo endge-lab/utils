@@ -44,8 +44,8 @@ export class EventBus<
 > {
   private listeners: Map<string, Set<EventCallback>> = new Map()
 
-  constructor(predefinedEvents: (keyof StaticEvents)[]) {
-    predefinedEvents.forEach((event) => {
+  constructor(predefinedEvents: Array<keyof StaticEvents>) {
+    predefinedEvents.forEach(event => {
       this.listeners.set(event as string, new Set())
     })
   }
@@ -53,15 +53,15 @@ export class EventBus<
   // ---- Типизированные события ----
 
   on<K extends keyof StaticEvents>(events: OneOrMany<K>, callback: EventCallback<StaticEvents[K]>): void {
-    this._on(events as string | string[], callback)
+    this._on(events as string | Array<string>, callback)
   }
 
   once<K extends keyof StaticEvents>(events: OneOrMany<K>, callback: EventCallback<StaticEvents[K]>): void {
-    this._once(events as string | string[], callback)
+    this._once(events as string | Array<string>, callback)
   }
 
   off<K extends keyof StaticEvents>(events: OneOrMany<K>, callback: EventCallback<StaticEvents[K]>): void {
-    this._off(events as string | string[], callback)
+    this._off(events as string | Array<string>, callback)
   }
   offAll(): void {
     for (const set of this.listeners.values()) {
@@ -76,15 +76,15 @@ export class EventBus<
   // ---- Кастомные события (опционально) ----
 
   onCustom<K extends keyof CustomEventMap>(events: OneOrMany<K>, callback: EventCallback<CustomEventMap[K]>): void {
-    this._on(events as string | string[], callback)
+    this._on(events as string | Array<string>, callback)
   }
 
   onceCustom<K extends keyof CustomEventMap>(events: OneOrMany<K>, callback: EventCallback<CustomEventMap[K]>): void {
-    this._once(events as string | string[], callback)
+    this._once(events as string | Array<string>, callback)
   }
 
   offCustom<K extends keyof CustomEventMap>(events: OneOrMany<K>, callback: EventCallback<CustomEventMap[K]>): void {
-    this._off(events as string | string[], callback)
+    this._off(events as string | Array<string>, callback)
   }
 
   emitCustom<K extends keyof CustomEventMap>(event: K, payload: CustomEventMap[K]): void {
@@ -133,7 +133,7 @@ export class EventBus<
     return (this.listeners.get(event)?.size ?? 0) > 0
   }
 
-  eventNames(): string[] {
+  eventNames(): Array<string> {
     return [...this.listeners.entries()].filter(([, set]) => set.size > 0).map(([event]) => event)
   }
 
@@ -158,4 +158,4 @@ export type GlobalEvents = {
   // Также можно использовать любые произвольные события
 }
 
-export const AppBus = new EventBus<GlobalEvents>(Object.keys({} as GlobalEvents) as (keyof GlobalEvents)[])
+export const AppBus = new EventBus<GlobalEvents>(Object.keys({} as GlobalEvents) as Array<keyof GlobalEvents>)

@@ -28,7 +28,7 @@ export class Subscribable {
    * Уведомляет всех подписчиков.
    */
   public notify(): void {
-    this.subscribers.forEach((listener) => listener())
+    this.subscribers.forEach(listener => listener())
   }
 }
 

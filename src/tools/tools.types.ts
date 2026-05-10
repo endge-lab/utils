@@ -18,7 +18,7 @@ export type Undefinable<T> = T | undefined
  * Тип конструктора для класса.
  * Используется, например, в DI-контейнерах или фабриках.
  */
-export type Constructor<T = any> = new (...args: any[]) => T
+export type Constructor<T = any> = new (...args: Array<any>) => T
 
 /**
  * Частичный рекурсивный тип.
@@ -42,7 +42,7 @@ export type Override<Base, Overrides> = Omit<Base, keyof Overrides> & Overrides
 /**
  * Тип для асинхронной функции.
  */
-export type AsyncFn<Args extends any[] = any[], R = any> = (...args: Args) => Promise<R>
+export type AsyncFn<Args extends Array<any> = Array<any>, R = any> = (...args: Args) => Promise<R>
 
 /**
  * Тип, представляющий значение или промис значения.
@@ -77,7 +77,7 @@ export type Truthy<T> = T extends Falsy ? never : T
 /**
  * Тип, объединяющий `P` или массив `P`.
  */
-export type MaybeArray<T> = T | T[]
+export type MaybeArray<T> = T | Array<T>
 
 /**
  * Тип, возвращающий все ключи объекта, значения которых равны заданному типу.
@@ -94,7 +94,7 @@ export type Ignored = never | void
 /**
  * Универсальный тип для одного или нескольких объектов.
  */
-export type OneOrMany<T> = T | T[]
+export type OneOrMany<T> = T | Array<T>
 
 /**
  * Тип для активного состояния с вычисляемым значением.
@@ -108,7 +108,7 @@ export type ActiveState<T> = {
  * Тип для глубокой частичной рекурсии.
  */
 export type PartialDeep<T> =
-  T extends (...args: any[]) => any
+  T extends (...args: Array<any>) => any
     ? T
     : T extends Array<infer U>
       ? Array<PartialDeep<U>>

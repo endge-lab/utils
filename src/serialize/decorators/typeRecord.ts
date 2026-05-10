@@ -1,6 +1,5 @@
 import type { ClassConstructor } from 'class-transformer'
-import { instanceToPlain, plainToInstance } from 'class-transformer'
-import { Transform, TransformationType } from 'class-transformer'
+import { instanceToPlain, plainToInstance , Transform, TransformationType } from 'class-transformer'
 
 /**
  * Декоратор `@TypeRecord` для автоматической (де)сериализации полей типа `Record<string, V>`.

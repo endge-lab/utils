@@ -12,7 +12,7 @@ export class ScriptRunner {
     const argNames = Object.keys(context)
 
     const wrappedContext = Object.fromEntries(
-      argNames.map((name) => [name, this.wrapIfAsync(context[name])]),
+      argNames.map(name => [name, this.wrapIfAsync(context[name])]),
     )
 
     const names = Array.from(exportNames)
@@ -95,7 +95,7 @@ export class ScriptRunner {
     const wrapped: Record<string, any> = {}
     for (const [key, value] of Object.entries(obj)) {
       if (typeof value === 'function') {
-        wrapped[key] = (...args: any[]) => {
+        wrapped[key] = (...args: Array<any>) => {
           const result = value(...args)
           if (result instanceof Promise) {
             return result // await будет в обёртке скрипта
