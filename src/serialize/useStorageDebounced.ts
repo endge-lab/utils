@@ -1,5 +1,5 @@
 import { ref, watch, type Ref } from 'vue'
-import { debounce } from 'lodash'
+import debounce from 'lodash/debounce.js'
 
 export function useStorageDebounced<T>(
   key: string,
