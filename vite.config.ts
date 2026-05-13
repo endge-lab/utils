@@ -35,7 +35,7 @@ export default defineConfig({
       external: isExternal,
     },
   },
-  plugins: [vue(), dts({ rollupTypes: true, tsconfigPath: './tsconfig.app.json' })],
+  plugins: [vue(), dts({ rollupTypes: true, tsconfigPath: './tsconfig.app.json', logLevel: 'silent' })],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
