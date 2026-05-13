@@ -7,13 +7,13 @@ export * from '@/collection/collection.types'
 export * from '@/events/EventBus'
 export * from '@/events/Subscribable'
 
-export * from '@/execute/DelayExecutor'
+export * from '@/execute/delay-executor'
 export * from '@/execute/NamedExecutor'
 
 export { toInstance, toPlain } from '@/shared/serialize/parse'
 export * from '@/shared/serialize/decorator'
-export { isNullOrUndefined } from '@/shared/types/Maybe'
-export type { Maybe as SharedMaybe } from '@/shared/types/Maybe'
+export { isNullOrUndefined } from '@/shared/types/maybe'
+export type { Maybe as SharedMaybe } from '@/shared/types/maybe'
 
 export * from '@/serialize/Serialize'
 export * from '@/serialize/decorators/json'
