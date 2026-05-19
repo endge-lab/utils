@@ -29,10 +29,16 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
   private indexEnabled = false
   private filterIndexEnabled = false
 
+  /**
+   * Создает экземпляр IndexedCollection и подготавливает базовое состояние.
+   */
   constructor(opts: Partial<CollectionOptions<T, ID>> | null = null) {
     if (opts) this.options(opts)
   }
 
+  /**
+   * Выполняет действие options в рамках ответственности IndexedCollection.
+   */
   options(opts: Partial<CollectionOptions<T, ID>>): this {
     if (Object.prototype.hasOwnProperty.call(opts, 'sortFn')) {
       this.sortFn = opts.sortFn
@@ -57,17 +63,26 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     return this
   }
 
+  /**
+   * Выполняет действие markDirty в рамках ответственности IndexedCollection.
+   */
   markDirty(opts: { filter?: boolean; sort?: boolean }): void {
     if (opts.sort) this.dirtySort = true
     if (opts.filter) this.dirtyFilter = true
   }
 
+  /**
+   * Выполняет действие ensure в рамках ответственности IndexedCollection.
+   */
   ensure(): void {
     this.ensureSorted()
     this.ensureFiltered()
   }
 
   // Сортировка list, если нужно
+  /**
+   * Выполняет действие ensureSorted в рамках ответственности IndexedCollection.
+   */
   ensureSorted(): void {
     if (this.dirtySort) {
       if (this.sortFn) {
@@ -92,6 +107,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
   }
 
   // Фильтр, если нужно
+  /**
+   * Выполняет действие ensureFiltered в рамках ответственности IndexedCollection.
+   */
   ensureFiltered(): void {
     if (this.dirtyFilter) {
       this.rebuildFilteredFromScratch()
@@ -99,6 +117,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     }
   }
 
+  /**
+   * Выполняет действие add в рамках ответственности IndexedCollection.
+   */
   add(items: OneOrMany<T>): void {
     const toAdd: Array<T> = Array.isArray(items) ? items : [items]
 
@@ -120,6 +141,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     if (this.sortFn) this.dirtySort = true
   }
 
+  /**
+   * Удаляет сущность из runtime-коллекции IndexedCollection.
+   */
   remove(ids: OneOrMany<ID>): void {
     const toRemove = Array.isArray(ids) ? ids : [ids]
 
@@ -164,6 +188,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     }
   }
 
+  /**
+   * Выполняет действие forEach в рамках ответственности IndexedCollection.
+   */
   forEach(callback: (item: T, index: number) => void): void {
     this.ensure()
     const src = this.filterFn ? this.filteredList : this.list
@@ -196,34 +223,55 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     return this.filterFn ? this.filteredList : this.list
   }
 
+  /**
+   * Выполняет действие pos в рамках ответственности IndexedCollection.
+   */
   pos(index: number): T | null {
     const all = this.all()
     if (index < 0 || index >= all.length) return null
     return all[index] ?? null
   }
 
+  /**
+   * Выполняет действие first в рамках ответственности IndexedCollection.
+   */
   first(): T | null {
     const all = this.all()
     return all.length ? all[0] ?? null : null
   }
 
+  /**
+   * Выполняет действие last в рамках ответственности IndexedCollection.
+   */
   last(): T | null {
     const all = this.all()
     return all.length ? all[all.length - 1] ?? null : null
   }
 
+  /**
+   * Выполняет действие has в рамках ответственности IndexedCollection.
+   */
   has(id: ID): boolean {
     return this.map.has(id)
   }
 
+  /**
+   * Возвращает значение состояния IndexedCollection.
+   */
   get(id: ID): T | undefined {
     return this.map.get(id)
   }
 
+  /**
+   * Выполняет действие size в рамках ответственности IndexedCollection.
+   */
   size(): number {
     return this.all().length
   }
 
+  /**
+   * Очищает накопленное состояние IndexedCollection.
+   */
   clear(): void {
     this.list = []
     this.filteredList = []
@@ -233,6 +281,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     this.dirtyFilter = false
   }
 
+  /**
+   * Выполняет внутренний шаг rebuildFilteredFromScratch для IndexedCollection.
+   */
   private rebuildFilteredFromScratch(): void {
     // Если фильтра нет — filteredList не используется
     if (!this.filterFn) {
@@ -256,6 +307,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     }
   }
 
+  /**
+   * Выполняет внутренний шаг addToFilteredIfPasses для IndexedCollection.
+   */
   private addToFilteredIfPasses(item: T): void {
     if (!this.filterFn) return
 
@@ -273,12 +327,18 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     }
   }
 
+  /**
+   * Добавляет сущность в runtime-коллекцию IndexedCollection.
+   */
   private appendToFiltered(item: T): void {
     const idx = this.filteredList.length
     this.filteredList.push(item)
     if (this.filterIndexEnabled) item.filteredIndex = idx
   }
 
+  /**
+   * Выполняет внутренний шаг refilterOneO1 для IndexedCollection.
+   */
   private refilterOneO1(item: T): boolean {
     if (!this.filterFn) return false
     if (!this.filterIndexEnabled) return false
@@ -298,6 +358,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     return true
   }
 
+  /**
+   * Удаляет сущность из runtime-коллекции IndexedCollection.
+   */
   private removeFromFilteredO1(item: T): void {
     if (!this.filterIndexEnabled) return
 
@@ -315,6 +378,9 @@ export class IndexedCollection<T extends IndexCollectionEntity<ID>, ID = string 
     item.filteredIndex = -1
   }
 
+  /**
+   * Удаляет сущность из runtime-коллекции IndexedCollection.
+   */
   private removeFromListO1(id: ID): void {
     const idx = this.indexById.get(id)
     if (idx === undefined) return

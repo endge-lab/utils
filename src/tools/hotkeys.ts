@@ -5,6 +5,9 @@ interface HotkeyManagerOptions {
   target?: EventTarget // по умолчанию — window
 }
 
+/**
+ * Управляет ресурсами и состоянием HotkeyManager.
+ */
 export class HotkeyManager {
   private bindings: Map<string, Set<HotkeyHandler>> = new Map()
   private enabled = true
@@ -12,6 +15,9 @@ export class HotkeyManager {
   private readonly ignoreInput: boolean
   private readonly handleBound: (event: KeyboardEvent) => void
 
+  /**
+   * Создает экземпляр HotkeyManager и подготавливает базовое состояние.
+   */
   constructor(options: HotkeyManagerOptions = {}) {
     this.target = options.target || window
     this.ignoreInput = options.ignoreInput ?? false
@@ -19,6 +25,9 @@ export class HotkeyManager {
     this.target.addEventListener('keydown', this.handleBound)
   }
 
+  /**
+   * Выполняет внутренний шаг isIgnoredTarget для HotkeyManager.
+   */
   private isIgnoredTarget(target: EventTarget | null): boolean {
     if (!this.ignoreInput) return false
     return (
@@ -28,6 +37,9 @@ export class HotkeyManager {
     )
   }
 
+  /**
+   * Нормализует входные данные HotkeyManager.
+   */
   private normalizeKey(event: KeyboardEvent): string {
     const keys = []
     if (event.ctrlKey) keys.push('ctrl')
@@ -38,6 +50,9 @@ export class HotkeyManager {
     return keys.join('+')
   }
 
+  /**
+   * Обрабатывает runtime-событие HotkeyManager.
+   */
   private handle(event: KeyboardEvent) {
     if (!this.enabled || this.isIgnoredTarget(event.target)) return
 
@@ -50,6 +65,9 @@ export class HotkeyManager {
     }
   }
 
+  /**
+   * Обрабатывает входящее событие HotkeyManager.
+   */
   on(keys: string | Array<string>, handler: HotkeyHandler): void {
     const keyList = Array.isArray(keys) ? keys : [keys]
     for (const key of keyList) {
@@ -61,6 +79,9 @@ export class HotkeyManager {
     }
   }
 
+  /**
+   * Выполняет действие off в рамках ответственности HotkeyManager.
+   */
   off(keys: string | Array<string>, handler: HotkeyHandler): void {
     const keyList = Array.isArray(keys) ? keys : [keys]
     for (const key of keyList) {
@@ -69,6 +90,9 @@ export class HotkeyManager {
     }
   }
 
+  /**
+   * Очищает накопленное состояние HotkeyManager.
+   */
   clear(key?: string): void {
     if (key) {
       this.bindings.delete(key.toLowerCase())
@@ -77,14 +101,23 @@ export class HotkeyManager {
     }
   }
 
+  /**
+   * Выполняет действие enable в рамках ответственности HotkeyManager.
+   */
   enable() {
     this.enabled = true
   }
 
+  /**
+   * Выполняет действие disable в рамках ответственности HotkeyManager.
+   */
   disable() {
     this.enabled = false
   }
 
+  /**
+   * Освобождает runtime-ресурсы и подписки HotkeyManager.
+   */
   destroy() {
     this.clear()
     this.target.removeEventListener('keydown', this.handleBound)

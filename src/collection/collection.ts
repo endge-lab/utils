@@ -6,12 +6,18 @@ import { Events } from '@/collection/collection.types'
 import { EventBus } from '@/events/EventBus'
 import { Subscribable } from '@/events/Subscribable'
 
+/**
+ * Описывает ответственность Collection в архитектуре проекта.
+ */
 export class Collection<T extends CollectionEntity> extends Subscribable {
   private items: Array<T> = []
   private indices: Map<keyof T, Map<any, T>> = new Map()
   private rootIds: Set<string> = new Set()
   private bus: EventBus<CollectionEvents<T>>
 
+  /**
+   * Создает экземпляр Collection и подготавливает базовое состояние.
+   */
   constructor(initialItems: Array<T> = []) {
     super()
     this.bus = new EventBus<CollectionEvents<T>>(Object.values(Events))
@@ -21,6 +27,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     this.createIndex('id')
   }
 
+  /**
+   * Выполняет действие add в рамках ответственности Collection.
+   */
   add(items: T | Array<T>): void {
     const list = Array.isArray(items) ? items : [items]
     list.forEach(item => {
@@ -38,6 +47,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     }
   }
 
+  /**
+   * Удаляет сущность из runtime-коллекции Collection.
+   */
   remove(arg: string | T | Array<string | T>): void {
     const list: Array<string | T> = Array.isArray(arg) ? arg : [arg]
     const removedItems: Array<T> = []
@@ -68,6 +80,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     }
   }
 
+  /**
+   * Обновляет runtime-состояние Collection.
+   */
   update(itemOrItems: T | Array<T>): void {
     const list = Array.isArray(itemOrItems) ? itemOrItems : [itemOrItems]
     list.forEach(item => {
@@ -85,6 +100,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     }
   }
 
+  /**
+   * Возвращает значение состояния Collection.
+   */
   get(arg: string | Partial<T>): T | undefined {
     if (typeof arg === 'string') {
       return this.indices.get('id')!.get(arg)
@@ -97,6 +115,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     }
   }
 
+  /**
+   * Создает runtime-сущность Collection.
+   */
   private createIndex(field: keyof T): void {
     if (this.indices.has(field)) return
     const indexMap = new Map<any, T>()
@@ -122,6 +143,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
   }
 
   // Доступ к подпискам
+  /**
+   * Обрабатывает входящее событие Collection.
+   */
   on<K extends keyof CollectionEvents<T>>(
     event: K,
     cb: (payload: CollectionEvents<T>[K]) => void,
@@ -129,6 +153,9 @@ export class Collection<T extends CollectionEntity> extends Subscribable {
     this.bus.on(event, cb)
   }
 
+  /**
+   * Выполняет действие off в рамках ответственности Collection.
+   */
   off<K extends keyof CollectionEvents<T>>(
     event: K,
     cb: (payload: CollectionEvents<T>[K]) => void,

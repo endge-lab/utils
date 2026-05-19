@@ -1,4 +1,10 @@
+/**
+ * Описывает ответственность ScriptRunner в архитектуре проекта.
+ */
 export class ScriptRunner {
+  /**
+   * Создает экземпляр ScriptRunner и подготавливает базовое состояние.
+   */
   constructor(private script: string) {}
 
   /**
@@ -89,6 +95,9 @@ export class ScriptRunner {
     }
   }
 
+  /**
+   * Выполняет внутренний шаг wrapIfAsync для ScriptRunner.
+   */
   private wrapIfAsync(obj: any): Record<string, any> {
     if (typeof obj !== 'object' || obj === null) return obj
 

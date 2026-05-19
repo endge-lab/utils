@@ -4,7 +4,13 @@ import { getOnDeserializedMethod } from '@/serialize/decorators/onDeserialized'
 
 // Инструмент сериализации данных на основании
 // пакета class-transformer
+/**
+ * Описывает ответственность Serialize в архитектуре проекта.
+ */
 export class Serialize {
+  /**
+   * Выполняет действие toPlain в рамках ответственности Serialize.
+   */
   static toPlain<T>(instance: T): any {
     return instanceToPlain(instance, {
       exposeDefaultValues: true,
@@ -12,6 +18,9 @@ export class Serialize {
     })
   }
 
+  /**
+   * Выполняет действие fromJSON в рамках ответственности Serialize.
+   */
   static fromJSON<T>(cls: ClassConstructor<T>, json: any): T {
     const instance = plainToInstance(cls, json, {
       exposeDefaultValues: true,

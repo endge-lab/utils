@@ -44,6 +44,9 @@ export class EventBus<
 > {
   private listeners: Map<string, Set<EventCallback>> = new Map()
 
+  /**
+   * Создает экземпляр EventBus и подготавливает базовое состояние.
+   */
   constructor(predefinedEvents: Array<keyof StaticEvents>) {
     predefinedEvents.forEach(event => {
       this.listeners.set(event as string, new Set())
@@ -52,47 +55,77 @@ export class EventBus<
 
   // ---- Типизированные события ----
 
+  /**
+   * Обрабатывает входящее событие EventBus.
+   */
   on<K extends keyof StaticEvents>(events: OneOrMany<K>, callback: EventCallback<StaticEvents[K]>): void {
     this._on(events as string | Array<string>, callback)
   }
 
+  /**
+   * Обрабатывает входящее событие EventBus.
+   */
   once<K extends keyof StaticEvents>(events: OneOrMany<K>, callback: EventCallback<StaticEvents[K]>): void {
     this._once(events as string | Array<string>, callback)
   }
 
+  /**
+   * Выполняет действие off в рамках ответственности EventBus.
+   */
   off<K extends keyof StaticEvents>(events: OneOrMany<K>, callback: EventCallback<StaticEvents[K]>): void {
     this._off(events as string | Array<string>, callback)
   }
+  /**
+   * Выполняет действие offAll в рамках ответственности EventBus.
+   */
   offAll(): void {
     for (const set of this.listeners.values()) {
       set.clear()
     }
   }
 
+  /**
+   * Публикует событие во внутренний event bus EventBus.
+   */
   emit<K extends keyof StaticEvents>(event: K, payload: StaticEvents[K]): void {
     this._emit(event as string, payload)
   }
 
   // ---- Кастомные события (опционально) ----
 
+  /**
+   * Обрабатывает входящее событие EventBus.
+   */
   onCustom<K extends keyof CustomEventMap>(events: OneOrMany<K>, callback: EventCallback<CustomEventMap[K]>): void {
     this._on(events as string | Array<string>, callback)
   }
 
+  /**
+   * Обрабатывает входящее событие EventBus.
+   */
   onceCustom<K extends keyof CustomEventMap>(events: OneOrMany<K>, callback: EventCallback<CustomEventMap[K]>): void {
     this._once(events as string | Array<string>, callback)
   }
 
+  /**
+   * Выполняет действие offCustom в рамках ответственности EventBus.
+   */
   offCustom<K extends keyof CustomEventMap>(events: OneOrMany<K>, callback: EventCallback<CustomEventMap[K]>): void {
     this._off(events as string | Array<string>, callback)
   }
 
+  /**
+   * Публикует событие во внутренний event bus EventBus.
+   */
   emitCustom<K extends keyof CustomEventMap>(event: K, payload: CustomEventMap[K]): void {
     this._emit(event as string, payload)
   }
 
   // ---- Общая логика ----
 
+  /**
+   * Обрабатывает входящее событие EventBus.
+   */
   private _on(events: OneOrMany<string>, callback: EventCallback): void {
     const eventList = Array.isArray(events) ? events : [events]
     for (const event of eventList) {
@@ -103,6 +136,9 @@ export class EventBus<
     }
   }
 
+  /**
+   * Обрабатывает входящее событие EventBus.
+   */
   private _once(events: OneOrMany<string>, callback: EventCallback): void {
     const eventList = Array.isArray(events) ? events : [events]
     const wrapper = (payload: any): void => {
@@ -114,6 +150,9 @@ export class EventBus<
     this._on(eventList, wrapper)
   }
 
+  /**
+   * Выполняет внутренний шаг _off для EventBus.
+   */
   private _off(events: OneOrMany<string>, callback: EventCallback): void {
     const eventList = Array.isArray(events) ? events : [events]
     for (const event of eventList) {
@@ -121,6 +160,9 @@ export class EventBus<
     }
   }
 
+  /**
+   * Публикует событие во внутренний event bus EventBus.
+   */
   private _emit(event: string, payload?: any): void {
     const callbacks = this.listeners.get(event)
     if (!callbacks) return
@@ -129,14 +171,23 @@ export class EventBus<
     }
   }
 
+  /**
+   * Выполняет действие hasListeners в рамках ответственности EventBus.
+   */
   hasListeners(event: string): boolean {
     return (this.listeners.get(event)?.size ?? 0) > 0
   }
 
+  /**
+   * Выполняет действие eventNames в рамках ответственности EventBus.
+   */
   eventNames(): Array<string> {
     return [...this.listeners.entries()].filter(([, set]) => set.size > 0).map(([event]) => event)
   }
 
+  /**
+   * Очищает накопленное состояние EventBus.
+   */
   clear(event?: string): void {
     if (event) {
       this.listeners.get(event)?.clear()
