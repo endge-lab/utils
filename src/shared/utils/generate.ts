@@ -14,11 +14,11 @@ export function randomString(length: number) {
 
 const allowedShiftPatternsIds = [2, 3, 4, 5, 9]
 
-function getRandomShiftTypeId() {
+function _getRandomShiftTypeId() {
   return allowedShiftPatternsIds[Math.floor(Math.random() * allowedShiftPatternsIds.length)]
 }
 
-function getRandomDate(start, end) {
+function _getRandomDate(start, end) {
   const startDate = new Date(start)
   const endDate = new Date(end)
   const randomTime = startDate.getTime() + Math.random() * (endDate.getTime() - startDate.getTime())

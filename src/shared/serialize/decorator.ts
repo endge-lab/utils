@@ -17,12 +17,12 @@ const BEFORE_SERIALIZE_KEY = Symbol('beforeSerialize')
 
 // Custom decorator to mark a method to be called before serialization
 export function BeforeSerialize() {
-  return function (target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+  return function (target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
     Reflect.defineMetadata(BEFORE_SERIALIZE_KEY, propertyKey, target)
   }
 }
 
-export function AfterDeserialize(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+export function AfterDeserialize(target: any, propertyKey: string, _descriptor: PropertyDescriptor) {
   if (!target.__afterDeserializeMethods__) {
     target.__afterDeserializeMethods__ = []
   }
@@ -45,7 +45,7 @@ export interface ISerializable {
   toJson(): string
 }
 
-function callBeforeSerialize(instance: any) {
+function _callBeforeSerialize(instance: any) {
   if (!instance || typeof instance !== 'object') {
     return
   }
@@ -58,7 +58,7 @@ function callBeforeSerialize(instance: any) {
   // Recursively call beforeSerialize for nested objects
   Object.values(instance).forEach(value => {
     if (value && typeof value === 'object') {
-      callBeforeSerialize(value)
+      _callBeforeSerialize(value)
     }
   })
 }
