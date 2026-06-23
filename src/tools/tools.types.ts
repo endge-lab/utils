@@ -55,9 +55,19 @@ export type Awaitable<T> = T | Promise<T>
 export type VoidFn = () => void
 
 /**
+ * Backward-compatible alias used by legacy packages.
+ */
+export type VoidFunction = VoidFn
+
+/**
  * Тип, обозначающий словарь значений.
  */
 export type Dictionary<T = any> = Record<string, T>
+
+/**
+ * Backward-compatible loose object record.
+ */
+export type AnyRecord = Record<string, any>
 
 /**
  * Тип, обозначающий функцию обратного вызова (callback).

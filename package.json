@@ -1,7 +1,7 @@
 {
   "name": "@endge/utils",
   "private": false,
-  "version": "0.23.0",
+  "version": "0.24.1",
   "type": "module",
   "module": "./dist/utils.js",
   "types": "./dist/index.d.ts",
@@ -23,6 +23,7 @@
     "test": "vitest"
   },
   "dependencies": {
+    "@microsoft/fetch-event-source": "^2.0.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "cookie-es": "^1.2.2",
@@ -31,10 +32,11 @@
     "destr": "^2.0.3",
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.2.2",
+    "ts-luxon": "^6.2.0",
     "uuid": "^11.0.3"
   },
   "peerDependencies": {
-    "pinia": "^3.0.0",
+    "pinia": "^2.1.7 || ^3.0.0",
     "vue": "^3.5.13"
   },
   "devDependencies": {

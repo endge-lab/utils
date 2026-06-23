@@ -47,7 +47,7 @@ export class EventBus<
   /**
    * Создает экземпляр EventBus и подготавливает базовое состояние.
    */
-  constructor(predefinedEvents: Array<keyof StaticEvents>) {
+  constructor(predefinedEvents: Array<keyof StaticEvents> = []) {
     predefinedEvents.forEach(event => {
       this.listeners.set(event as string, new Set())
     })

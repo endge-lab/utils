@@ -7,6 +7,7 @@ const externalPackages = [
   '@endge/nova',
   '@endge/nova-ui-kit',
   '@endge/utils',
+  '@microsoft/fetch-event-source',
   'class-transformer',
   'class-validator',
   'cookie-es',
@@ -16,6 +17,7 @@ const externalPackages = [
   'lodash',
   'pinia',
   'reflect-metadata',
+  'ts-luxon',
   'uuid',
   'vue',
 ]

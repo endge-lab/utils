@@ -1,4 +1,4 @@
-import { ref, triggerRef, type Ref } from 'vue'
+import { onScopeDispose, ref, triggerRef, type Ref } from 'vue'
 
 /**
  * Subscribable – базовый класс для реализации паттерна наблюдателя.
@@ -43,4 +43,17 @@ export const useSubscribableRef = <T extends Subscribable>(
     triggerRef(refObj)
   })
   return { refObj, unsubscribe }
+}
+
+export const useSubscribableRefAuto = <T extends Subscribable>(
+  obj: T,
+): Ref<T> => {
+  const refObj = ref(obj) as Ref<T>
+  const unsubscribe = obj.subscribe(() => triggerRef(refObj))
+
+  onScopeDispose(() => {
+    unsubscribe()
+  })
+
+  return refObj
 }

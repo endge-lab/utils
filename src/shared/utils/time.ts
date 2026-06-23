@@ -1,4 +1,13 @@
-import { endOfDay, format, isAfter, isBefore, isEqual, startOfDay } from 'date-fns'
+import {
+  differenceInCalendarDays,
+  differenceInSeconds,
+  endOfDay,
+  format,
+  isAfter,
+  isBefore,
+  isEqual,
+  startOfDay,
+} from 'date-fns'
 import { getTimezoneOffset, utcToZonedTime } from 'date-fns-tz'
 
 export interface DateRange {
@@ -97,6 +106,240 @@ export function findMinMaxDates(dates: Set<Date>): { minDate: Date; maxDate: Dat
     minDate: new Date(minTime),
     maxDate: new Date(maxTime),
   }
+}
+
+export function diffDuration(d1: Date, d2: Date): string {
+  const diffSeconds = differenceInSeconds(d1, d2)
+  const { hours, minutes } = secondsToClockParts(diffSeconds)
+
+  if (hours || minutes)
+    return `${diffSeconds > 0 ? '-' : '+'}${pad2(hours)}:${pad2(minutes)}`
+
+  return ''
+}
+
+export function diffDurationTable(d1: Date, d2: Date): string {
+  const diffSeconds = differenceInSeconds(d1, d2)
+  const { hours, minutes } = secondsToClockParts(diffSeconds)
+
+  if (hours || minutes)
+    return `${diffSeconds > 0 ? '-' : ''}${pad2(hours)}:${pad2(minutes)}`
+
+  return ''
+}
+
+export function removeTime(date = new Date()): Date {
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+
+export function getDateOnlyDiffFactor(d1: Date, d2: Date): { variant: 'red' | 'blue'; value: string } | null {
+  const diff = differenceInCalendarDays(removeTime(d1), removeTime(d2))
+
+  if (!diff)
+    return null
+
+  if (diff > 7) {
+    return {
+      variant: 'red',
+      value: '>7',
+    }
+  }
+
+  if (diff < -7) {
+    return {
+      variant: 'blue',
+      value: '>7',
+    }
+  }
+
+  if (diff > 0) {
+    return {
+      variant: 'red',
+      value: `+${diff}`,
+    }
+  }
+
+  return {
+    variant: 'blue',
+    value: `${diff}`,
+  }
+}
+
+export function toIsoZDate(value: string): string | null {
+  const text = String(value ?? '').trim()
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})$/)
+  if (!match)
+    return null
+
+  const year = Number(match[1])
+  const month = Number(match[2]) - 1
+  const day = Number(match[3])
+  const date = new Date(Date.UTC(year, month, day, 0, 0, 0, 0))
+
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}
+
+export function toIsoZDateTime(value: string): string | null {
+  const text = String(value ?? '').trim()
+  if (!text)
+    return null
+
+  const match = text.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?$/)
+  if (match) {
+    const year = Number(match[1])
+    const month = Number(match[2]) - 1
+    const day = Number(match[3])
+    const hours = Number(match[4])
+    const minutes = Number(match[5])
+    const seconds = match[6] != null ? Number(match[6]) : 0
+    const date = new Date(year, month, day, hours, minutes, seconds, 0)
+
+    return Number.isNaN(date.getTime()) ? null : date.toISOString()
+  }
+
+  const date = new Date(text)
+  return Number.isNaN(date.getTime()) ? null : date.toISOString()
+}
+
+export function isoToDateInput(value: unknown): string {
+  const text = String(value ?? '').trim()
+  return text ? text.slice(0, 10) : ''
+}
+
+export function isoToDateTimeLocalInput(value: unknown): string {
+  const text = String(value ?? '').trim()
+  if (!text)
+    return ''
+
+  const date = new Date(text)
+  if (Number.isNaN(date.getTime()))
+    return text.slice(0, 16)
+
+  const year = date.getFullYear()
+  const month = pad2(date.getMonth() + 1)
+  const day = pad2(date.getDate())
+  const hours = pad2(date.getHours())
+  const minutes = pad2(date.getMinutes())
+
+  return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
+export function timeToTimeInput(value: unknown): string {
+  if (value == null)
+    return ''
+
+  const text = String(value).trim()
+  if (!text)
+    return ''
+
+  const withSeconds = text.match(/^(\d{2}):(\d{2}):(\d{2})$/)
+  if (withSeconds)
+    return `${withSeconds[1]}:${withSeconds[2]}`
+
+  const withoutSeconds = text.match(/^(\d{2}):(\d{2})$/)
+  if (withoutSeconds)
+    return `${withoutSeconds[1]}:${withoutSeconds[2]}`
+
+  return ''
+}
+
+export function toTimeHHMMSS(value: unknown): string | null {
+  if (value == null)
+    return null
+
+  const text = String(value).trim()
+  if (!text)
+    return null
+
+  const withSeconds = text.match(/^(\d{2}):(\d{2}):(\d{2})$/)
+  if (withSeconds)
+    return `${withSeconds[1]}:${withSeconds[2]}:${withSeconds[3]}`
+
+  const withoutSeconds = text.match(/^(\d{2}):(\d{2})$/)
+  if (withoutSeconds)
+    return `${withoutSeconds[1]}:${withoutSeconds[2]}:00`
+
+  return null
+}
+
+export function parseDuration(duration: string): string {
+  const seconds = parseDurationToSeconds(duration)
+  const sign = Math.sign(seconds) >= 0 ? '' : '-'
+  const { hours, minutes } = secondsToClockParts(seconds)
+
+  return `${sign}${pad2(hours)}:${pad2(minutes)}`
+}
+
+export function formatDatetimeTZSpecial(
+  date: Date | string | object | null = null,
+  formatString = 'dd',
+  options = {},
+): string {
+  const normalizedDate = normalizeDateInput(date)
+  if (!normalizedDate)
+    return ''
+
+  const currentDate = new Date()
+  const dateAdopted = new Date(normalizedDate)
+
+  currentDate.setHours(0, 0, 0, 0)
+  dateAdopted.setHours(0, 0, 0, 0)
+
+  if (dateAdopted.toDateString() === currentDate.toDateString())
+    return ''
+
+  return `/${format(normalizedDate, formatString, options)}`
+}
+
+function normalizeDateInput(date: Date | string | object | null): Date | null {
+  if (!date || date === '')
+    return null
+
+  const normalizedDate = typeof date === 'string'
+    ? new Date(date)
+    : date instanceof Date
+      ? date
+      : new Date(date.toString())
+
+  return Number.isNaN(normalizedDate.getTime()) ? null : normalizedDate
+}
+
+function secondsToClockParts(seconds: number): { hours: number; minutes: number } {
+  const absSeconds = Math.abs(seconds)
+
+  return {
+    hours: Math.floor(absSeconds / 3600) % 24,
+    minutes: Math.floor(absSeconds / 60) % 60,
+  }
+}
+
+function parseDurationToSeconds(duration: string): number {
+  const text = String(duration ?? '').trim()
+  if (!text)
+    return 0
+
+  const clock = text.match(/^(-)?(\d{1,2}):(\d{2})(?::(\d{2}))?$/)
+  if (clock) {
+    const sign = clock[1] ? -1 : 1
+    return sign * ((Number(clock[2]) * 3600) + (Number(clock[3]) * 60) + Number(clock[4] ?? 0))
+  }
+
+  const iso = text.match(/^(-)?P(?:(\d+(?:\.\d+)?)D)?(?:T(?:(\d+(?:\.\d+)?)H)?(?:(\d+(?:\.\d+)?)M)?(?:(\d+(?:\.\d+)?)S)?)?$/i)
+  if (iso) {
+    const sign = iso[1] ? -1 : 1
+    const days = Number(iso[2] ?? 0)
+    const hours = Number(iso[3] ?? 0)
+    const minutes = Number(iso[4] ?? 0)
+    const seconds = Number(iso[5] ?? 0)
+
+    return sign * ((days * 86400) + (hours * 3600) + (minutes * 60) + seconds)
+  }
+
+  return 0
+}
+
+function pad2(value: number): string {
+  return String(value).padStart(2, '0')
 }
 
 /**
