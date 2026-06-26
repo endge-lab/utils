@@ -29,12 +29,20 @@ export class ScriptRunner {
 
     const fullScript = `${this.script}${exposeCode}`
 
-    const fn = new Function(
-      ...argNames,
-      `"use strict"; return (async () => { ${fullScript} })();`,
-    )
+    try {
+      const fn = new Function(
+        ...argNames,
+        `"use strict"; return (async () => { ${fullScript} })();`,
+      )
 
-    return await fn(...Object.values(wrappedContext))
+      return await fn(...Object.values(wrappedContext))
+    } catch (e) {
+      console.warn(
+        '(ScriptRunner.runAsync): Ошибка в скрипте:',
+        fullScript,
+        e,
+      )
+    }
   }
 
   /**
@@ -62,7 +70,7 @@ export class ScriptRunner {
       fn(...argValues)
     } catch (e) {
       console.warn(
-        '(ScriptRunner.runSync): Ошибка в выражении:',
+        '(ScriptRunner.runSync): Ошибка в скрипте:',
         this.script,
         e,
       )
@@ -77,8 +85,6 @@ export class ScriptRunner {
     const argNames = Object.keys(context)
     const argValues = Object.values(context)
 
-    console.log(context)
-
     try {
       const fn = new Function(
         ...argNames,
@@ -87,7 +93,7 @@ export class ScriptRunner {
       return fn(...argValues)
     } catch (e) {
       console.warn(
-        '(ScriptRunner.runSync): Ошибка в выражении:',
+        '(ScriptRunner.evaluate): Ошибка в выражении:',
         this.script,
         e,
       )
