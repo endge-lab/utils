@@ -1,7 +1,7 @@
 {
   "name": "@endge/utils",
   "private": false,
-  "version": "0.24.2",
+  "version": "0.24.3",
   "type": "module",
   "module": "./dist/utils.js",
   "types": "./dist/index.d.ts",
