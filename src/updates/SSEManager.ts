@@ -4,7 +4,7 @@ export interface SSEManagerOptions {
   url: string
   retryInterval?: number
   headers?: Record<string, string>
-  getToken?: () => string | undefined
+  getToken?: () => string | undefined | Promise<string | undefined>
   onEvent: (data: any) => void
   onError?: (error: Error) => void
   onOpen?: () => void
@@ -49,10 +49,10 @@ export class SSEManager {
     }
   }
 
-  private _buildHeaders(): Record<string, string> {
+  private async _buildHeaders(): Promise<Record<string, string>> {
     const headers: Record<string, string> = { ...this._options.headers }
 
-    const token = this._options.getToken?.()
+    const token = await this._options.getToken?.()
     if (token)
       headers.Authorization = `Bearer ${token}`
 
@@ -63,7 +63,7 @@ export class SSEManager {
     try {
       await fetchEventSource(this._url, {
         method: 'GET',
-        headers: this._buildHeaders(),
+        headers: await this._buildHeaders(),
         signal: this._abortController?.signal,
         openWhenHidden: true,
         onopen: (response) => {
@@ -96,9 +96,10 @@ export class SSEManager {
         },
       })
     } catch (err) {
-      console.error('[SSEManager] Fatal error', err)
+      const error = err instanceof Error ? err : new Error(String(err))
+      console.error('[SSEManager] Fatal error:', error.message)
       this._isConnected = false
-      this._options.onError?.(err instanceof Error ? err : new Error(String(err)))
+      this._options.onError?.(error)
       this._scheduleReconnect()
     }
   }
