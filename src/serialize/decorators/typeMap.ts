@@ -9,16 +9,16 @@ import {
 /**
  * Декоратор @TypeMap для автоматической сериализации и десериализации `Map<K, V>`.
  * Поддерживает два формата JSON:
- * 1. **Объект → `Map<K, V>`** (если `keyField` не указан)
- * 2. **Массив → `Map<K, V>`** (если указан `keyField`)
+ * 1. **Объект - `Map<K, V>`** (если `keyField` не указан)
+ * 2. **Массив - `Map<K, V>`** (если указан `keyField`)
  *
  * @param valueType - Класс значений в `Map<K, V>`.
  * @param keyField - (необязательно) Поле, используемое как ключ (`name`, `id`, и т. д.).
  *
- * ## Пример использования (объект → `Map`)
+ * ## Пример использования (объект - `Map`)
  * ```typescript
  * export class ReflectDomain {
- *   @TypeMap(RType) // JSON-объект { key: value } → Map<string, RType>
+ *   @TypeMap(RType) // JSON-объект { key: value } - Map<string, RType>
  *   private types: Map<string, RType> = new Map()
  * }
  * ```
@@ -37,10 +37,10 @@ import {
  * ReflectDomain.getType('User') // RType('User')
  * ```
  *
- * ## Пример использования (массив → `Map`)
+ * ## Пример использования (массив - `Map`)
  * ```typescript
  * export class ReflectDomain {
- *   @TypeMap(RType, 'name') // JSON-массив [{ name: value }, ...] → Map<string, RType>
+ *   @TypeMap(RType, 'name') // JSON-массив [{ name: value }, ...] - Map<string, RType>
  *   private types: Map<string, RType> = new Map()
  * }
  * ```
@@ -66,7 +66,7 @@ export function TypeMap<V>(
   return Transform(({ value, type }) => {
     if (!value) return new Map()
 
-    // Десериализация (JSON → Map)
+    // Десериализация (JSON - Map)
     if (type === TransformationType.PLAIN_TO_CLASS) {
       if (Array.isArray(value)) {
         if (!keyField) {
@@ -98,7 +98,7 @@ export function TypeMap<V>(
       return new Map()
     }
 
-    // Сериализация (Map → JSON)
+    // Сериализация (Map - JSON)
     if (type === TransformationType.CLASS_TO_PLAIN) {
       if (!(value instanceof Map)) {
         console.warn('[TypeMap] Expected Map, got:', value)
