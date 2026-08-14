@@ -1,5 +1,6 @@
 import { ref, watch, type Ref } from 'vue'
 import debounce from 'lodash/debounce.js'
+import { consoleErrorSummary } from '@/tools/console'
 
 export function useStorageDebounced<T>(
   key: string,
@@ -15,8 +16,8 @@ export function useStorageDebounced<T>(
     try {
       const parsed = JSON.parse(savedRaw)
       value = fromJSON(parsed)
-    } catch {
-      console.error('Failed to parse from localStorage', key, savedRaw)
+    } catch (error) {
+      console.error(`[useStorageDebounced] Failed to parse "${key}" (${savedRaw.length} chars): ${consoleErrorSummary(error)}`)
     }
   }
 
@@ -26,8 +27,8 @@ export function useStorageDebounced<T>(
     try {
       const serialized = JSON.stringify(toJSON(state.value))
       localStorage.setItem(key, serialized)
-    } catch {
-      console.error('Failed to save to localStorage', key, state.value)
+    } catch (error) {
+      console.error(`[useStorageDebounced] Failed to save "${key}": ${consoleErrorSummary(error)}`)
     }
   }, delay)
 

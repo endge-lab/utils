@@ -1,3 +1,5 @@
+import { consoleErrorSummary } from '@/tools/console'
+
 type NamedExecutorConfig = {
   delayMs: number
   maxMs: number
@@ -54,7 +56,7 @@ export class NamedExecutor {
       const cb = this.callbacks.get(id)
       if (cb) cb()
     } catch (e) {
-      console.error('[NamedExecutor] flush error:', e)
+      console.error(`[NamedExecutor] flush error: ${consoleErrorSummary(e)}`)
     }
 
     this.clear(id)

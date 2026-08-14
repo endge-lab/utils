@@ -28,6 +28,7 @@ export * from '@/serialize/decorators/typeRecord'
 export * from '@/serialize/useStorageDebounced'
 
 export * from '@/tools/compare'
+export * from '@/tools/console'
 export * from '@/tools/debug'
 export * from '@/tools/generate'
 export * from '@/tools/geometry'

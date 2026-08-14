@@ -5,6 +5,7 @@ import {
   Transform,
   TransformationType,
 } from 'class-transformer'
+import { consoleValueSummary } from '@/tools/console'
 
 /**
  * Декоратор @TypeMap для автоматической сериализации и десериализации `Map<K, V>`.
@@ -94,21 +95,21 @@ export function TypeMap<V>(
         )
       }
 
-      console.warn('[TypeMap] Expected object or array, got:', value)
+      console.warn(`[TypeMap] Expected object or array, got ${consoleValueSummary(value)}`)
       return new Map()
     }
 
     // Сериализация (Map - JSON)
     if (type === TransformationType.CLASS_TO_PLAIN) {
       if (!(value instanceof Map)) {
-        console.warn('[TypeMap] Expected Map, got:', value)
+        console.warn(`[TypeMap] Expected Map, got ${consoleValueSummary(value)}`)
         return keyField ? [] : {}
       }
 
       return Array.from(value.values()).map(item => instanceToPlain(item))
     }
 
-    console.warn('[TypeMap] Unexpected transformation type:', type)
+    console.warn(`[TypeMap] Unexpected transformation type: ${String(type)}`)
     return value
   })
 }

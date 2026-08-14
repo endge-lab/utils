@@ -1,4 +1,5 @@
 import { EventStreamContentType, fetchEventSource } from '@microsoft/fetch-event-source'
+import { consoleErrorSummary } from '@/tools/console'
 
 export interface SSEManagerOptions {
   url: string
@@ -81,7 +82,7 @@ export class SSEManager {
           try {
             this._options.onEvent(JSON.parse(msg.data))
           } catch (err) {
-            console.warn('[SSEManager] Failed to parse message', err)
+            console.warn(`[SSEManager] Failed to parse message: ${consoleErrorSummary(err)}`)
           }
         },
         onclose: () => {
