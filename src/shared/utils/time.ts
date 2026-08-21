@@ -8,7 +8,7 @@ import {
   isEqual,
   startOfDay,
 } from 'date-fns'
-import { getTimezoneOffset, utcToZonedTime } from 'date-fns-tz'
+import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
 
 export interface DateRange {
   start: Date
@@ -224,6 +224,47 @@ export function isoToDateTimeLocalInput(value: unknown): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
+/** Formats a DateTime as `HH:mm` in the configured IANA timezone or browser-local timezone. */
+export function isoDateTimeToTimeInput(value: unknown, timezone?: unknown): string {
+  const directTime = timeToTimeInput(value)
+  if (directTime)
+    return directTime
+
+  const date = new Date(String(value ?? '').trim())
+  if (Number.isNaN(date.getTime()))
+    return ''
+
+  const zone = normalizeInputTimezone(timezone)
+  const local = zone ? utcToZonedTime(date, zone) : date
+  return `${pad2(local.getHours())}:${pad2(local.getMinutes())}`
+}
+
+/** Replaces only hours and minutes while preserving the DateTime calendar date in the selected timezone. */
+export function mergeTimeIntoDateTime(value: unknown, time: unknown, timezone?: unknown): string | null {
+  const parsedTime = timeToTimeInput(time).match(/^(\d{2}):(\d{2})$/)
+  if (!parsedTime)
+    return null
+
+  const date = new Date(String(value ?? '').trim())
+  if (Number.isNaN(date.getTime()))
+    return null
+
+  const hours = Number(parsedTime[1])
+  const minutes = Number(parsedTime[2])
+  if (hours > 23 || minutes > 59)
+    return null
+
+  const zone = normalizeInputTimezone(timezone)
+  if (!zone) {
+    date.setHours(hours, minutes, 0, 0)
+    return date.toISOString()
+  }
+
+  const local = utcToZonedTime(date, zone)
+  local.setHours(hours, minutes, 0, 0)
+  return zonedTimeToUtc(local, zone).toISOString()
+}
+
 export function timeToTimeInput(value: unknown): string {
   if (value == null)
     return ''
@@ -241,6 +282,20 @@ export function timeToTimeInput(value: unknown): string {
     return `${withoutSeconds[1]}:${withoutSeconds[2]}`
 
   return ''
+}
+
+function normalizeInputTimezone(value: unknown): string | null {
+  const timezone = String(value ?? '').trim()
+  if (!timezone || timezone === 'local')
+    return null
+
+  try {
+    new Intl.DateTimeFormat('en', { timeZone: timezone }).format()
+    return timezone
+  }
+  catch {
+    return null
+  }
 }
 
 export function toTimeHHMMSS(value: unknown): string | null {
