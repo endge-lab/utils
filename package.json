@@ -1,0 +1,47 @@
+{
+  "name": "@endge/utils",
+  "type": "module",
+  "version": "0.27.1",
+  "private": false,
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/utils.js"
+    }
+  },
+  "module": "./dist/utils.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "dev": "vite build --watch",
+    "build": "pnpm typecheck && vite build",
+    "typecheck": "tsc -p tsconfig.app.json --noEmit",
+    "test": "vitest",
+    "lint-check": "eslint . --cache",
+    "lint-fix": "eslint . --fix --cache"
+  },
+  "dependencies": {
+    "@microsoft/fetch-event-source": "^2.0.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "date-fns": "^2.30.0",
+    "date-fns-tz": "^2.0.1",
+    "lodash": "^4.17.21",
+    "reflect-metadata": "^0.2.2",
+    "ts-luxon": "^6.2.0",
+    "uuid": "^11.0.3"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "9.3.0",
+    "eslint": "10.9.1",
+    "rimraf": "^6.0.1",
+    "typescript": "~6.0.3",
+    "unplugin-dts": "^1.0.3",
+    "vite": "^6.1.0",
+    "vitest": "^3.2.4"
+  }
+}

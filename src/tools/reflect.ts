@@ -1,0 +1,38 @@
+/**
+ * Проверяет, является ли переданная функция конструктором.
+ */
+export function isConstructor<T extends new (...args: Array<any>) => any>(
+  fn: any,
+): fn is T {
+  try {
+    void new (new Proxy(fn, { construct: () => ({}) }))()
+    return true
+  }
+  catch {
+    return false
+  }
+}
+
+/**
+ * Утилитарный тип: или конструктор, или фабрика.
+ */
+export type ConstructorOrFactory<T, Args extends Array<any> = Array<any>>
+  = | (new (...args: Args) => T)
+    | ((...args: Args) => T)
+
+/**
+ * Универсальный вызов: конструктор или фабрика.
+ */
+export function createInstance<T, Args extends Array<any>>(
+  source: ConstructorOrFactory<T, Args>,
+  ...args: Args
+): T {
+  if (isConstructor(source)) {
+    const Ctor = source as new (...args: Args) => T
+    return new Ctor(...args)
+  }
+  else {
+    const Factory = source as (...args: Args) => T
+    return Factory(...args)
+  }
+}
