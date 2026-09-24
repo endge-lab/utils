@@ -1,14 +1,12 @@
 import { Transform } from 'class-transformer'
 
-/**
- * Декоратор для преобразования JSON-поля:
- * - сериализует объект - строку
- * - десериализует строку - объект
- *
- * Пример:
- * @Json()
- * collection: Record<string, any> = {}
- */
+// Декоратор для преобразования JSON-поля:
+// - сериализует объект - строку
+// - десериализует строку - объект
+//
+// Пример:
+// @Json()
+// collection: Record<string, any> = {}
 export function Json(): PropertyDecorator {
   return function (target: any, propertyKey: string | symbol) {
     Transform(

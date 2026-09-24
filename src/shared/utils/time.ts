@@ -233,7 +233,7 @@ export function isoToDateTimeLocalInput(value: unknown): string {
   return `${year}-${month}-${day}T${hours}:${minutes}`
 }
 
-/** Форматирует DateTime как `HH:mm` в настроенном часовом поясе IANA или локальном поясе браузера. */
+// Форматирует DateTime как `HH:mm` в настроенном часовом поясе IANA или локальном поясе браузера.
 export function isoDateTimeToTimeInput(value: unknown, timezone?: unknown): string {
   const directTime = timeToTimeInput(value)
   if (directTime) {
@@ -250,7 +250,7 @@ export function isoDateTimeToTimeInput(value: unknown, timezone?: unknown): stri
   return `${pad2(local.getHours())}:${pad2(local.getMinutes())}`
 }
 
-/** Заменяет только часы и минуты, сохраняя календарную дату DateTime в выбранном часовом поясе. */
+// Заменяет только часы и минуты, сохраняя календарную дату DateTime в выбранном часовом поясе.
 export function mergeTimeIntoDateTime(value: unknown, time: unknown, timezone?: unknown): string | null {
   const parsedTime = timeToTimeInput(time).match(/^(\d{2}):(\d{2})$/)
   if (!parsedTime) {
@@ -424,9 +424,7 @@ function pad2(value: number): string {
   return String(value).padStart(2, '0')
 }
 
-/**
- * Возвращает первую найденную IANA-таймзону с данным смещением (например, "+03:00").
- */
+// Возвращает первую найденную IANA-таймзону с данным смещением (например, "+03:00").
 export function parseOffsetToTimezone(offsetStr: string): string | null {
   const now = new Date()
 

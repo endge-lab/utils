@@ -1,4 +1,4 @@
-/** Возвращает строку ограниченной длины без обхода или удержания переданного значения. */
+// Возвращает строку ограниченной длины без обхода или удержания переданного значения.
 export function consoleValueSummary(value: unknown): string {
   if (value == null) {
     return String(value)
@@ -21,7 +21,7 @@ export function consoleValueSummary(value: unknown): string {
   return value.constructor?.name || 'Object'
 }
 
-/** Возвращает метаданные Error как текст, не передавая объект Error в Console. */
+// Возвращает метаданные Error как текст, не передавая объект Error в Console.
 export function consoleErrorSummary(error: unknown): string {
   return error instanceof Error
     ? `${error.name}: ${error.message}`
