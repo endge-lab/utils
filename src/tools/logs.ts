@@ -19,19 +19,19 @@ import { Subscribable } from '@/events/Subscribable'
  * }
  */
 export interface StructuredLogEntry {
-  /** Время создания лога (timestamp в ms) */
+  // Время создания лога (timestamp в ms)
   timestamp: number
 
-  /** Уровень лога: _debug, info, warn или error */
+  // Уровень лога: _debug, info, warn или error
   level: 'debug' | 'info' | 'warn' | 'error' | 'success'
 
-  /** Сообщение лога */
+  // Сообщение лога
   message: string
 
-  /** Контекст (иерархия вложенности) */
+  // Контекст (иерархия вложенности)
   context: Array<string>
 
-  /** Дополнительные действия (например, кнопки для лога) */
+  // Дополнительные действия (например, кнопки для лога)
   actions?: Array<{
     icon: string
     tooltip?: string
@@ -68,10 +68,10 @@ export interface StructuredLogEntry {
  * const logs = logger.getLogs()
  */
 export class StructuredLogger extends Subscribable {
-  /** Массив всех логов */
+  // Массив всех логов
   private _logs: Array<StructuredLogEntry> = []
 
-  /** Текущий контекст (иерархия) */
+  // Текущий контекст (иерархия)
   private _currentContext: Array<string> = []
   private _currentActions: NonNullable<StructuredLogEntry['actions']> = []
 
