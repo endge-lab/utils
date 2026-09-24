@@ -48,12 +48,12 @@ const modifierKeys = new Set([
   'SymbolLock',
 ])
 
-/** Возвращает общий snapshot клавиатуры уровня document, лениво устанавливая один tracker. */
+// Возвращает общий snapshot клавиатуры уровня document, лениво устанавливая один tracker.
 export function getKeyboardStateSnapshot(target: Document): KeyboardStateSnapshot {
   return cloneKeyboardStateSnapshot(ensureKeyboardStateTracker(target).snapshot)
 }
 
-/** Подписывается на общее состояние клавиатуры уровня document и сразу публикует его snapshot. */
+// Подписывается на общее состояние клавиатуры уровня document и сразу публикует его snapshot.
 export function subscribeKeyboardState(
   target: Document,
   listener: (snapshot: KeyboardStateSnapshot) => void,

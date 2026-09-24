@@ -1,6 +1,4 @@
-/**
- * Проверяет, является ли переданная функция конструктором.
- */
+// Проверяет, является ли переданная функция конструктором.
 export function isConstructor<T extends new (...args: Array<any>) => any>(
   fn: any,
 ): fn is T {
@@ -13,16 +11,12 @@ export function isConstructor<T extends new (...args: Array<any>) => any>(
   }
 }
 
-/**
- * Утилитарный тип: или конструктор, или фабрика.
- */
+// Утилитарный тип: или конструктор, или фабрика.
 export type ConstructorOrFactory<T, Args extends Array<any> = Array<any>>
   = | (new (...args: Args) => T)
     | ((...args: Args) => T)
 
-/**
- * Универсальный вызов: конструктор или фабрика.
- */
+// Универсальный вызов: конструктор или фабрика.
 export function createInstance<T, Args extends Array<any>>(
   source: ConstructorOrFactory<T, Args>,
   ...args: Args

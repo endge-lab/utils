@@ -3,7 +3,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { Subscribable } from '@/events/Subscribable'
 
 describe('подписываемое состояние', () => {
-  /** Проверяет публикацию изменения всем активным подписчикам. */
+  // Проверяет публикацию изменения всем активным подписчикам.
   it('уведомляет каждого активного подписчика', () => {
     const subscribable = new Subscribable()
     const first = vi.fn()
@@ -17,7 +17,7 @@ describe('подписываемое состояние', () => {
     expect(second).toHaveBeenCalledOnce()
   })
 
-  /** Проверяет, что отписанный consumer больше не получает изменения. */
+  // Проверяет, что отписанный consumer больше не получает изменения.
   it('прекращает уведомления после отписки', () => {
     const subscribable = new Subscribable()
     const listener = vi.fn()

@@ -9,7 +9,7 @@ export type EventCallback<T = any> = (payload: T) => void
 export type EventList = Record<string, any>
 
 export interface EventBusOptions {
-  /** При наличии изолирует ошибки подписчиков, включая rejected Promise. */
+  // При наличии изолирует ошибки подписчиков, включая rejected Promise.
   onListenerError?: (error: unknown, event: string) => void
 }
 
