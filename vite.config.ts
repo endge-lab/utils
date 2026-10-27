@@ -4,6 +4,7 @@ import { defineConfig } from 'vite'
 
 const externalPackages = [
   '@microsoft/fetch-event-source',
+  '@typedworks/federation',
   'class-transformer',
   'class-validator',
   'date-fns',
@@ -27,6 +28,17 @@ export default defineConfig({
     },
     rollupOptions: {
       external: isExternal,
+      output: {
+        // Сериализация сохраняет общую инициализацию Reflect для своих public API.
+        onlyExplicitManualChunks: true,
+        manualChunks(id) {
+          const sourcePath = path.relative(path.resolve(__dirname, 'src'), id)
+          return sourcePath.startsWith(`serialize${path.sep}`)
+            || sourcePath.startsWith(`shared${path.sep}serialize${path.sep}`)
+            ? 'serialize'
+            : undefined
+        },
+      },
     },
   },
   plugins: [dts({ bundleTypes: false, tsconfigPath: './tsconfig.app.json' })],

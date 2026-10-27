@@ -102,4 +102,75 @@ describe('sse manager transport ownership', () => {
     expect(window.fetch).toHaveBeenCalledTimes(1)
     expect(vi.getTimerCount()).toBe(0)
   })
+
+  function streamResponse(chunks: string[], signal: AbortSignal, keepOpen = false) {
+    const encoder = new TextEncoder()
+    return new Response(new ReadableStream({ start(controller) {
+      chunks.forEach(chunk => controller.enqueue(encoder.encode(chunk)))
+      if (keepOpen) {
+        signal.addEventListener('abort', () => controller.error(new DOMException('stopped', 'AbortError')))
+      }
+      else {
+        controller.close()
+      }
+    } }), { headers: { 'content-type': 'text/event-stream' } })
+  }
+
+  it('sends POST body with credentials and keeps event names, ids and non-JSON data', async () => {
+    vi.mocked(window.fetch).mockImplementation(async (_, init) => streamResponse([
+      'event: next\nid: 7\ndata: {"data":{"n":1}}\n\n',
+      'event: complete\ndata:\n\n',
+      'data: plain text\n\n',
+    ], init!.signal!, true))
+    const onMessage = vi.fn()
+    const onEvent = vi.fn()
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const value = manager({
+      method: 'POST',
+      body: '{"query":"subscription { n }"}',
+      headers: { 'Content-Type': 'application/json' },
+      withCredentials: true,
+      onMessage,
+      onEvent,
+    })
+    value.start()
+    await vi.advanceTimersByTimeAsync(0)
+    const init = vi.mocked(window.fetch).mock.calls[0][1]!
+    expect(init.method).toBe('POST')
+    expect(init.body).toBe('{"query":"subscription { n }"}')
+    expect(init.credentials).toBe('include')
+    expect(init.headers).toMatchObject({ 'Content-Type': 'application/json', 'accept': 'text/event-stream' })
+    expect(onMessage.mock.calls.map(([message]) => message)).toEqual([
+      { event: 'next', id: '7', data: { data: { n: 1 } } },
+      { event: 'complete', id: null, data: '' },
+      { event: 'message', id: null, data: 'plain text' },
+    ])
+    expect(onEvent).toHaveBeenCalledWith({ data: { n: 1 } })
+    warn.mockRestore()
+  })
+
+  it('does not reconnect when onMessage stops the manager after the final event', async () => {
+    vi.mocked(window.fetch).mockImplementation(async (_, init) => streamResponse([
+      'event: complete\ndata:\n\n',
+    ], init!.signal!))
+    const value = manager({ onMessage: message => message.event === 'complete' && value.stop() })
+    value.start()
+    await vi.advanceTimersByTimeAsync(20000)
+    expect(window.fetch).toHaveBeenCalledTimes(1)
+    expect(vi.getTimerCount()).toBe(0)
+  })
+
+  it('reconnects after the server closes the stream without a final event', async () => {
+    vi.mocked(window.fetch).mockImplementation(async (_, init) => streamResponse([
+      'event: next\ndata: {}\n\n',
+    ], init!.signal!))
+    const onMessage = vi.fn()
+    const value = manager({ onMessage })
+    value.start()
+    await vi.advanceTimersByTimeAsync(0)
+    expect(window.fetch).toHaveBeenCalledTimes(1)
+    await vi.advanceTimersByTimeAsync(5000)
+    expect(window.fetch).toHaveBeenCalledTimes(2)
+    expect(onMessage).toHaveBeenCalledTimes(2)
+  })
 })
