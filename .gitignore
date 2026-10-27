@@ -4,3 +4,11 @@ coverage/
 *.tsbuildinfo
 *.log
 .eslintcache
+
+# Local environment and generated tool files
+.idea/
+.DS_Store
+/.env
+/.env.*
+!/.env.example
+!/.env.*.example
