@@ -1,12 +1,27 @@
 import { EventStreamContentType, fetchEventSource } from '@microsoft/fetch-event-source'
 import { consoleErrorSummary } from '@/tools/console'
 
+// Одно SSE-событие с сохранённым именем: data разобрано как JSON, иначе остаётся строкой.
+export interface SSEManagerMessage {
+  event: string
+  id: string | null
+  data: unknown
+}
+
 export interface SSEManagerOptions {
   url: string
   retryInterval?: number
+  // HTTP-метод запроса потока; POST используется вместе с body (например, протокол graphql-sse).
+  method?: 'GET' | 'POST'
+  body?: string
   headers?: Record<string, string>
+  // Отправлять cookies и HTTP-авторизацию браузера (fetch credentials: 'include').
+  withCredentials?: boolean
   getToken?: () => string | undefined | Promise<string | undefined>
-  onEvent: (data: any) => void
+  // Устаревший обработчик: получает только JSON data любого события без имени события.
+  onEvent?: (data: any) => void
+  // Получает каждое событие с именем (по умолчанию 'message') и id.
+  onMessage?: (message: SSEManagerMessage) => void
   onError?: (error: Error) => void
   onOpen?: () => void
   onClose?: () => void
@@ -86,7 +101,9 @@ export class SSEManager {
         return
       }
       await fetchEventSource(this._url, {
-        method: 'GET',
+        method: this._options.method ?? 'GET',
+        ...(this._options.body !== undefined ? { body: this._options.body } : {}),
+        ...(this._options.withCredentials ? { credentials: 'include' as const } : {}),
         headers,
         signal: controller.signal,
         openWhenHidden: true,
@@ -106,6 +123,15 @@ export class SSEManager {
         },
         onmessage: (msg) => {
           if (!this._isCurrent(controller)) {
+            return
+          }
+          this._options.onMessage?.({
+            event: msg.event || 'message',
+            id: msg.id || null,
+            data: parseMessageData(msg.data),
+          })
+          // onMessage может остановить manager (например, после события complete).
+          if (!this._options.onEvent || !this._isCurrent(controller)) {
             return
           }
           try {
@@ -146,5 +172,14 @@ export class SSEManager {
 
   public get isConnected(): boolean {
     return this._isConnected
+  }
+}
+
+function parseMessageData(value: string): unknown {
+  try {
+    return JSON.parse(value)
+  }
+  catch {
+    return value
   }
 }
