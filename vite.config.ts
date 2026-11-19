@@ -1,14 +1,15 @@
 import path from 'node:path'
 import dts from 'unplugin-dts/vite'
 import { defineConfig } from 'vite'
+import { processDeclarationSpecifiers } from './build-tools/declaration-specifiers'
 
 const externalPackages = [
+  '@date-fns/tz',
   '@microsoft/fetch-event-source',
   '@typedworks/federation',
   'class-transformer',
   'class-validator',
   'date-fns',
-  'date-fns-tz',
   'lodash',
   'reflect-metadata',
   'ts-luxon',
@@ -41,7 +42,14 @@ export default defineConfig({
       },
     },
   },
-  plugins: [dts({ bundleTypes: false, tsconfigPath: './tsconfig.app.json' })],
+  plugins: [dts({
+    bundleTypes: false,
+    tsconfigPath: './tsconfig.app.json',
+    beforeWriteFile(filePath, content) {
+      const sourceFile = path.resolve(__dirname, 'src', path.relative(path.resolve(__dirname, 'dist'), filePath))
+      return { filePath, content: processDeclarationSpecifiers(sourceFile, content) }
+    },
+  })],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),

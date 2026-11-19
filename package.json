@@ -1,7 +1,7 @@
 {
   "name": "@endge/utils",
   "type": "module",
-  "version": "1.0.0-dev.6",
+  "version": "1.0.0-dev.9",
   "private": false,
   "repository": {
     "type": "git",
@@ -29,12 +29,12 @@
     "lint-fix": "eslint . --fix --cache"
   },
   "dependencies": {
+    "@date-fns/tz": "^1.5.0",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@typedworks/federation": "1.0.0-dev.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
-    "date-fns": "^2.30.0",
-    "date-fns-tz": "^2.0.1",
+    "date-fns": "^4.4.0",
     "lodash": "^4.17.21",
     "reflect-metadata": "^0.2.2",
     "ts-luxon": "^6.2.0",

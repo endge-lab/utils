@@ -1,3 +1,4 @@
+import { tz, TZDate, tzOffset } from '@date-fns/tz'
 import {
   differenceInCalendarDays,
   differenceInSeconds,
@@ -8,7 +9,8 @@ import {
   isEqual,
   startOfDay,
 } from 'date-fns'
-import { getTimezoneOffset, utcToZonedTime, zonedTimeToUtc } from 'date-fns-tz'
+
+const utc = tz('UTC')
 
 export interface DateRange {
   start: Date
@@ -70,7 +72,7 @@ export function formatDatetimeTZ(
   if (isLocalTime) {
     return format(date as Date, formatString, options)
   }
-  return format(utcToZonedTime(date as Date, 'utc'), formatString, options)
+  return format(date as Date, formatString, { ...options, in: utc })
 }
 
 export function getDayOfWeek(date: Date | number): string {
@@ -246,7 +248,7 @@ export function isoDateTimeToTimeInput(value: unknown, timezone?: unknown): stri
   }
 
   const zone = normalizeInputTimezone(timezone)
-  const local = zone ? utcToZonedTime(date, zone) : date
+  const local = zone ? new TZDate(date, zone) : date
   return `${pad2(local.getHours())}:${pad2(local.getMinutes())}`
 }
 
@@ -274,9 +276,25 @@ export function mergeTimeIntoDateTime(value: unknown, time: unknown, timezone?: 
     return date.toISOString()
   }
 
-  const local = utcToZonedTime(date, zone)
-  local.setHours(hours, minutes, 0, 0)
-  return zonedTimeToUtc(local, zone).toISOString()
+  const local = new TZDate(date, zone)
+  const wallDate = new Date(0)
+  wallDate.setUTCFullYear(local.getFullYear(), local.getMonth(), local.getDate())
+  wallDate.setUTCHours(hours, minutes)
+
+  const offset = tzOffset(zone, wallDate)
+  const candidate = new Date(wallDate.getTime() - offset * 60_000)
+  const candidateOffset = tzOffset(zone, candidate)
+  if (offset === candidateOffset) {
+    return candidate.toISOString()
+  }
+
+  const corrected = new Date(wallDate.getTime() - candidateOffset * 60_000)
+  if (candidateOffset === tzOffset(zone, corrected)) {
+    return corrected.toISOString()
+  }
+
+  // Для пропущенного при переводе часов времени сохраняем прежний выбор более раннего момента.
+  return candidate < corrected ? candidate.toISOString() : corrected.toISOString()
 }
 
 export function timeToTimeInput(value: unknown): string {
@@ -429,12 +447,15 @@ export function parseOffsetToTimezone(offsetStr: string): string | null {
   const now = new Date()
 
   try {
-    const targetOffset = getTimezoneOffset(offsetStr, now)
+    const targetOffset = readTimezoneOffset(offsetStr, now)
+    if (Number.isNaN(targetOffset)) {
+      return null
+    }
 
     const timezones = Intl.supportedValuesOf('timeZone')
-    for (const tz of timezones) {
-      if (getTimezoneOffset(tz, now) === targetOffset) {
-        return tz
+    for (const timezone of timezones) {
+      if (tzOffset(timezone, now) === targetOffset) {
+        return timezone
       }
     }
   }
@@ -445,10 +466,26 @@ export function parseOffsetToTimezone(offsetStr: string): string | null {
   return null
 }
 
-/*
- * Возвращает смещение таймзоны в часах относительно UTC.
- */
+// Возвращает смещение часового пояса относительно UTC в миллисекундах.
 export function getTimezoneOffsetMs(timezone: string): number {
-  const offsetMinutes = getTimezoneOffset(timezone, new Date())
-  return offsetMinutes
+  return readTimezoneOffset(timezone, new Date()) * 60_000
+}
+
+function readTimezoneOffset(timezone: string, date: Date): number {
+  if (timezone === '' || timezone === 'Z') {
+    return 0
+  }
+
+  const fixedOffset = /^([+-])(\d{2})(?::?(\d{2}))?$/.exec(timezone)
+  if (fixedOffset) {
+    const hours = Number(fixedOffset[2])
+    const minutes = Number(fixedOffset[3] ?? 0)
+    if (hours > 23 || minutes > 59) {
+      return Number.NaN
+    }
+
+    return (fixedOffset[1] === '-' ? -1 : 1) * (hours * 60 + minutes)
+  }
+
+  return tzOffset(timezone, date)
 }
